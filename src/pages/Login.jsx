@@ -1,12 +1,15 @@
 import { useState } from "react"
 import Message from "../components/Message"
+import { useUser } from "../context/UserContext"
 
 const Login = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [message, setMessage] = useState({ type: "", text: "" })
+  const [loading, setLoading] = useState(false)
+  const { login } = useUser()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
     if (!email.trim() || !password.trim()) {
@@ -18,7 +21,15 @@ const Login = () => {
       return
     }
 
-    setMessage({ type: "success", text: "¡Inicio de sesión exitoso!" })
+    // Login con el backend: al guardar el token, la ruta redirige al home
+    setLoading(true)
+    setMessage({ type: "", text: "" })
+    try {
+      await login(email, password)
+    } catch (err) {
+      setMessage({ type: "error", text: err.message })
+      setLoading(false)
+    }
   }
 
   return (
@@ -47,7 +58,9 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <button type="submit" className="btn btn-primary">Login</button>
+        <button type="submit" className="btn btn-primary" disabled={loading}>
+          {loading ? "Ingresando..." : "Login"}
+        </button>
       </form>
       <Message type={message.type} text={message.text} />
     </main>

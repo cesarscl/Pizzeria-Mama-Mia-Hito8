@@ -1,6 +1,6 @@
 # Pizzería Mamma Mia!
 
-Hito 7 - React Router II | Desafío Latam - Fullstack JS
+Hito 8 - Cierre proyecto React (JWT) | Desafío Latam - Fullstack JS
 
 ## Accesos
 
@@ -8,17 +8,19 @@ Hito 7 - React Router II | Desafío Latam - Fullstack JS
 - **Backend / API (Render):** [pizzeria-backend-laiv.onrender.com/api/pizzas](https://pizzeria-backend-laiv.onrender.com/api/pizzas)
 - **Repositorio:** [cesarscl/Pizzeria-Mama-Mia-Hito6](https://github.com/cesarscl/Pizzeria-Mama-Mia-Hito6)
 
-> El backend está en el plan gratuito de Render y podría estar inactivo al momento de la evaluación: la primera carga puede tardar cerca de un minuto.
+> El backend está en el plan gratuito de Render y podría estar inactivo al momento de la evaluación: la primera carga puede tardar cerca de un minuto. Además, Render puede borrar los usuarios registrados cuando el servidor se reinicia; si el login dice que el usuario no existe, regístrate de nuevo.
 
-## Hito 7: useParams y rutas protegidas
+## Hito 8: autenticación con JWT
 
-- [x] **Pizza** obtiene el `id` con `useParams` (`/pizza/:id`) y consulta `GET /api/pizzas/:id`. El botón **Ver Más** de cada tarjeta lleva a su pizza.
-- [x] `UserContext` guarda el `token` simulado (por defecto `true`) y el método `logout`, que lo deja en `false`.
-- [x] El **Navbar** usa el contexto: con token muestra Profile y Logout (que ejecuta `logout`); sin token, Login y Register. Home y Total siempre visibles.
-- [x] En **Cart**, el botón Pagar se deshabilita si el token es `false`.
-- [x] `/profile` es una ruta protegida: sin token redirige a `/login`. Con token, `/login` y `/register` redirigen a `/`.
+- [x] `UserContext` tiene los métodos `login` y `register`, que consumen `POST /api/auth/login` y `POST /api/auth/register` y guardan el `token` JWT y el `email` en sus estados.
+- [x] `logout` elimina el `token` y el `email` del estado.
+- [x] `getProfile` obtiene el perfil del usuario autenticado con `GET /api/auth/me` (header `Authorization: Bearer <token>`).
+- [x] Las páginas **Login** y **Register** usan esos métodos para acceder al sistema y muestran los errores del backend.
+- [x] **Profile** muestra el email del usuario autenticado y un botón para cerrar sesión.
+- [x] El botón **Logout** del Navbar cierra la sesión.
+- [x] **Cart** envía el carrito a `POST /api/checkouts` con el token y muestra un mensaje de éxito al completar la compra.
 
-> Para volver a tener sesión después del logout, recarga la página: el token vuelve a `true`.
+> La sesión se guarda en `localStorage`, así que se mantiene al recargar la página. Para probar: regístrate con un email y una contraseña de al menos 6 caracteres.
 
 ## Hitos anteriores
 
@@ -30,17 +32,18 @@ Hito 7 - React Router II | Desafío Latam - Fullstack JS
 | 4 | Pizzas desde la API con `useEffect` y `fetch` (Home y detalle `p001`) |
 | 5 | Rutas con React Router, carpeta `pages`, Profile y NotFound |
 | 6 | Carrito global con Context API (`CartContext`): añadir, `+` / `-` / 🗑 y mismo total en Navbar y Cart |
+| 7 | `useParams` en Pizza (`/pizza/:id`), `UserContext` con token y rutas protegidas (`/profile`, `/login`, `/register`) |
 
 ## Rutas
 
 | Ruta | Página |
 |---|---|
 | `/` | Home |
-| `/register` | Register (sin token) |
-| `/login` | Login (sin token) |
+| `/register` | Register (sin sesión) |
+| `/login` | Login (sin sesión) |
 | `/cart` | Cart |
 | `/pizza/:id` | Pizza (ej. `/pizza/p001` … `/pizza/p006`) |
-| `/profile` | Profile (requiere token) |
+| `/profile` | Profile (requiere sesión) |
 | `/404` y rutas inexistentes | NotFound |
 
 ## Estructura

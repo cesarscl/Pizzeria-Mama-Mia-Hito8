@@ -32,11 +32,14 @@ const CartProvider = ({ children }) => {
     setCart((prev) => prev.filter((pizza) => pizza.id !== id))
   }
 
+  // Vacía el carrito (después de una compra exitosa)
+  const clearCart = () => setCart([])
+
   // Total compartido por Navbar y Cart
   const total = cart.reduce((acc, pizza) => acc + pizza.price * pizza.count, 0)
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, increase, decrease, removeFromCart, total }}>
+    <CartContext.Provider value={{ cart, addToCart, increase, decrease, removeFromCart, clearCart, total }}>
       {children}
     </CartContext.Provider>
   )

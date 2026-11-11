@@ -1,13 +1,16 @@
 import { useState } from "react"
 import Message from "../components/Message"
+import { useUser } from "../context/UserContext"
 
 const Register = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [message, setMessage] = useState({ type: "", text: "" })
+  const [loading, setLoading] = useState(false)
+  const { register } = useUser()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
     if (!email.trim() || !password.trim() || !confirmPassword.trim()) {
@@ -23,10 +26,15 @@ const Register = () => {
       return
     }
 
-    setMessage({ type: "success", text: "¡Registro exitoso!" })
-    setEmail("")
-    setPassword("")
-    setConfirmPassword("")
+    // Registro con el backend: al guardar el token, la ruta redirige al home
+    setLoading(true)
+    setMessage({ type: "", text: "" })
+    try {
+      await register(email, password)
+    } catch (err) {
+      setMessage({ type: "error", text: err.message })
+      setLoading(false)
+    }
   }
 
   return (
@@ -66,7 +74,9 @@ const Register = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
         </div>
-        <button type="submit" className="btn btn-primary">Register</button>
+        <button type="submit" className="btn btn-primary" disabled={loading}>
+          {loading ? "Registrando..." : "Register"}
+        </button>
       </form>
       <Message type={message.type} text={message.text} />
     </main>
